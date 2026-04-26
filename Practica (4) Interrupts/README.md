@@ -25,12 +25,8 @@ clear the interrupt after having served it, otherwise we might never go back to 
 
 link del video - https://youtube.com/shorts/g_VeJAytbeo
 
+**Example 3**
+Part 3. Event counter. The goal of this last part of the lab is to integrate concepts of interrupts and timers, and put together a simple application involving the LCD and the 4x4 matrix keyboard. The main idea is to reuse the code of part 1 of this lab, but instead of toggling LEDs, we will integrate into the second part of the previous lab (ascending timer): when the counter is counting, if interrupt from PTA1 is activated, the code should execute and IS that halts the counter and shows a message such as "PAUSED", the main program can resume if you press the * key.
 
-
-
-
-
-
-
-
+link del video -
 
