@@ -14,10 +14,9 @@ RED/BLUE/GREEN
 LED IS ON!
 The led should remain on for a few seconds, then go off and display the initial menu again.
 
-Video: 
+Video: https://youtu.be/V43pn1mDdWg
 
-
-
+-----------------------------------------------------------------------------------------------------------------------
 
 **PART 2**
 Ascending Timer: The goal of the program is to implement a simple timer, as the ones used
@@ -34,6 +33,6 @@ immediately after the termination key was selected or by pressing the same key a
 5. Once the timer has elapsed, you can use a buzzer (if you have it) or a led to mark that the timer
 went to zero
 
-Video: 
+Video: https://youtube.com/shorts/ERHJy1qE6Us?feature=share
 
 
