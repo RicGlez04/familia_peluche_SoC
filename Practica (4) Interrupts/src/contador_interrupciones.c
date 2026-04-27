@@ -1,3 +1,5 @@
+// Parte (3) de la práctica (4)
+
 #include <MKL25Z4.h>
 
 /* --- DEFINICIONES DE PINES PARA LCD --- */
