@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import sys
 
 puerto_kl25z= "COM5"
-baudios= 9600 #Tenemos que ver que tantos baudios vamos a utilizar
-timeout= 1
+baudios = 115200 #Tenemos que ver que tantos baudios vamos a utilizar
+timeout = 1
 
 ser: None
 try: 
-    ser= serial.Serial(puerto_kl25z,baudios, timeout)
+    ser = serial.Serial(puerto_kl25z,baudios, timeout)
     print(f"Conectando a {puerto_kl25z}")
 
 except Exception as e:
@@ -20,7 +20,7 @@ except Exception as e:
 
 #-----Preparacion de la grafica ------------------#
 plt.ion() #Activar el modo interactivo para actualizar la grafica a tiempo real
-fig, ax= plt.subplots()
+fig, ax = plt.subplots()
 ax.set_title("Radar - Sensor Ultrasonico KL25Z")
 ax.set_xlabel("Distancia X (cm)")
 ax.set_ylabel("Distancia Y (cm)")
@@ -33,8 +33,8 @@ ax.grid(True) # malla
 
 #------------- Creador de punto ----------------------#
 puntos, = ax.plot([],[],'go',markersize=2) # go = green circle 
-x_data= []
-y_data= []
+x_data = []
+y_data = []
 
 print("Esperando datos....... >:v ")
 
@@ -43,12 +43,16 @@ print("Esperando datos....... >:v ")
 try: 
     while True: 
         #1. Leer linea desde la KL25Z
-        linea= ser.readline().decode('utf-8', errors= 'ignore').strip()
+        linea = ser.readline().decode('utf-8', errors= 'ignore').strip()
 
         if linea:
             try:
                 # 2. Separar datos (asumiendo formato "angulo,distancia")
                 datos = linea.split(',')
+
+                if len(datos) != 2:
+                    continue
+
                 angulo_grados = float(datos[0])
                 distancia = float(datos[1])
                 
@@ -57,6 +61,10 @@ try:
                 angulo_rad = math.radians(angulo_grados)
                 x = distancia * math.cos(angulo_rad)
                 y = distancia * math.sin(angulo_rad)
+
+                # Limpiar puntos anteriores
+                x_data.clear
+                y_data.clear
                 
                 # 4. Actualizar listas de datos
                 x_data.append(x)
