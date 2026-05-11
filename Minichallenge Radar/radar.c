@@ -77,41 +77,54 @@ float leer_distancia(void) {
 }
 
 int main(void) {
-    init_all();
+
+	// Inicializar todos los modulos que se van a utilizar
+	init_all();
+
+	// Definir constantes
     int paso_actual = 0;
     int ciclos_vuelta = 512; // Ajuste para motor 28BYJ-48
 
-    printf("\r\n--- TARS: Sistema de Control de Giro ---\r\n");
+    // Definir angulo
+    float angulo = 0;
+
+    // printf("\r\n--- TARS: Sistema de Control de Giro ---\r\n");
 
     while(1) {
         // --- GIRO HACIA ADELANTE ---
-        printf("> Girando adelante...\r\n");
+        // printf("> Girando adelante...\r\n");
         for (int r = 0; r < ciclos_vuelta; r++) {
             for (int i = 0; i < 4; i++) {
                 paso_actual = i; // Actualización del paso actual solicitado
                 PTB->PDOR = (PTB->PDOR & ~0x0F) | secuencia[paso_actual];
                 delay_us(1500);
             }
+
             // Muestra distancia cada 50 ciclos para no frenar el motor
-            if(r % 50 == 0) printf("Distancia: %.1f cm\r\n", leer_distancia());
+            if(r % 50 == 0) {
+            	angulo = (360.0 / ciclos_vuelta) * r;
+            	printf("%.1f,%.1f\r\n", angulo, leer_distancia());
+            }
         }
 
-        printf("> Pausa...\r\n");
+        // printf("> Pausa...\r\n");
         PTB->PCOR = 0x0F; // Apagar bobinas
         delay_us(1000000); // 1 segundo
 
         // --- GIRO HACIA ATRÁS (Secuencia invertida) ---
-        printf("> Girando atras...\r\n");
+        // printf("> Girando atras...\r\n");
         for (int r = 0; r < ciclos_vuelta; r++) {
             for (int i = 3; i >= 0; i--) { // Índice invertido
                 paso_actual = i; // Actualización del paso actual solicitado
                 PTB->PDOR = (PTB->PDOR & ~0x0F) | secuencia[paso_actual];
                 delay_us(1500);
             }
-            if(r % 50 == 0) printf("Distancia: %.1f cm\r\n", leer_distancia());
+            if(r % 50 == 0) {
+            	angulo = (360.0 / ciclos_vuelta) * r;
+            	printf("%.1f,%.1f\r\n", angulo, leer_distancia());
+            }
         }
-
-        printf("> Ciclo terminado.\r\n");
+        // printf("> Ciclo terminado.\r\n");
         delay_us(1000000);
     }
 }
