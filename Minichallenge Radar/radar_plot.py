@@ -1,91 +1,57 @@
 import serial
 import math
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import sys
 
-puerto_kl25z= "COM5"
-baudios = 115200 #Tenemos que ver que tantos baudios vamos a utilizar
-timeout = 1
+puerto = "COM4" # Cambia si es necesario
+rango_max = 50
 
-ser: None
-try: 
-    ser = serial.Serial(puerto_kl25z,baudios, timeout)
-    print(f"Conectando a {puerto_kl25z}")
+try:
+    ser = serial.Serial(puerto, 9600, timeout=0.1)
+    print(f"✅ Radar conectado en {puerto}")
+except:
+    print("❌ Error de conexión"); sys.exit()
 
-except Exception as e:
-    print("Error: No se logro conectar al puerto..... :( )")
-    print(f"Esta mal, en que esta mal si meti todo bien, esta mal en algo {e}")
-    sys.exit()
+plt.ion()
+fig, ax = plt.subplots(figsize=(8, 8))
+ax.set_aspect('equal')
+ax.set_xlim(-rango_max-5, rango_max+5)
+ax.set_ylim(-rango_max-5, rango_max+5)
+ax.axis('off')
 
+# Dibujo del Radar
+circ_fondo = patches.Circle((0,0), rango_max, color='#0F172A', zorder=0)
+circ_borde = patches.Circle((0,0), rango_max, edgecolor='#22D3EE', fill=False, linewidth=2, zorder=5)
+ax.add_patch(circ_fondo)
+ax.add_patch(circ_borde)
 
-#-----Preparacion de la grafica ------------------#
-plt.ion() #Activar el modo interactivo para actualizar la grafica a tiempo real
-fig, ax = plt.subplots()
-ax.set_title("Radar - Sensor Ultrasonico KL25Z")
-ax.set_xlabel("Distancia X (cm)")
-ax.set_ylabel("Distancia Y (cm)")
+# Línea de barrido y puntos
+haz, = ax.plot([], [], color='#22D3EE', linewidth=3, alpha=0.8)
+puntos, = ax.plot([], [], 'o', color='#F87171', markersize=5, alpha=0.6)
 
-#-------Ajustar los limites  ---------------#
+x_hist, y_hist = [], []
 
-ax.set_xlim(-100, 100) # (-100, 100)
-ax.set_ylim(-100, 100) # (-100, 100)
-ax.grid(True) # malla 
-
-#------------- Creador de punto ----------------------#
-puntos, = ax.plot([],[],'go',markersize=2) # go = green circle 
-x_data = []
-y_data = []
-
-print("Esperando datos....... >:v ")
-
-# ------------Codigo principal ----------------#
-
-try: 
-    while True: 
-        #1. Leer linea desde la KL25Z
-        linea = ser.readline().decode('utf-8', errors= 'ignore').strip()
-
-        if linea:
+try:
+    while True:
+        linea = ser.readline().decode('utf-8', errors='ignore').strip()
+        if ',' in linea:
             try:
-                # 2. Separar datos (asumiendo formato "angulo,distancia")
-                datos = linea.split(',')
-
-                if len(datos) != 2:
-                    continue
-
-                angulo_grados = float(datos[0])
-                distancia = float(datos[1])
+                ang, dist = map(float, linea.split(','))
+                rad = math.radians(ang)
                 
-                # 3. Convertir de Polares a Cartesianas
-                # Nota: math.sin/cos usan radianes
-                angulo_rad = math.radians(angulo_grados)
-                x = distancia * math.cos(angulo_rad)
-                y = distancia * math.sin(angulo_rad)
-
-                # Limpiar puntos anteriores
-                x_data.clear
-                y_data.clear
+                # Conversión X, Y
+                x = dist * math.cos(rad)
+                y = dist * math.sin(rad)
                 
-                # 4. Actualizar listas de datos
-                x_data.append(x)
-                y_data.append(y)
+                x_hist.append(x); y_hist.append(y)
+                if len(x_hist) > 40: x_hist.pop(0); y_hist.pop(0)
                 
-                # Opcional: Mantener solo los últimos 50 puntos para que no se sature
-                if len(x_data) > 50:
-                    x_data.pop(0)
-                    y_data.pop(0)
-                
-                # 5. Actualizar la gráfica
-                puntos.set_data(x_data, y_data)
-                plt.draw()
-                plt.pause(0.01) # Pausa necesaria para que matplotlib se renderice
-                
-            except (ValueError, IndexError):
-                # Ignora líneas que no tengan el formato correcto
-                continue
-
+                puntos.set_data(x_hist, y_hist)
+                haz.set_data([0, x], [0, y])
+                fig.canvas.draw_idle()
+                fig.canvas.flush_events()
+            except: continue
+        plt.pause(0.001)
 except KeyboardInterrupt:
-    print("\nPrograma detenido por el usuario.")
-finally:
-    ser.close()
-    print("Ya se cerro")
+    ser.close(); plt.close()
