@@ -63,4 +63,5 @@ is between 0 – 0.75V the motor should run on Mode 1; between 0.76 and 1.5V on 
 1.51 and 2.25V on mode 3 and finally, between 2.25 and 3V on Mode 4. We also should use a button
 to go the main menu and a second button to stop the motor.
 
-Video link: 
+Video link: https://youtube.com/shorts/NTlPcMJWEqs
+
