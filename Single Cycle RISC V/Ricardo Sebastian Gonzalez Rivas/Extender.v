@@ -1,9 +1,10 @@
+// Este modulo implementa el extensor de inmediatos
 module Extender(
-    // Inputs
+    // Entradas
     input [1:0] ImmSrc,      // Señal de control dependiendo de la instrucción
-    input [31:0] Instruction // Recibe señal completa
+    input [31:0] Instruction, // Recibe señal completa
 
-    // Outputs
+    // Salidas
     output reg [31:0] ImmExt
 );
 
