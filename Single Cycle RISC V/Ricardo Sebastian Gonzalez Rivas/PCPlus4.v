@@ -1,9 +1,9 @@
 module PCPlus4(
-    // Input
+    // Entradas
     input [31:0] PC,
 
-    // Output
-    output [31:0] PCPlus4,
+    // Salidas
+    output [31:0] PCPlus4  // PC sumado con 4
 );
 
 // Añadir cuatro al PC
