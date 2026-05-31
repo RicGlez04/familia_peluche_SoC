@@ -1,10 +1,11 @@
 // Este modulo implementa el main decoder que va dentro del Control Unit
 module mainDecoder(
+    // Entradas
     input [6:0] op,
-    input zero,
 
-    output reg PCSrc,
-    output reg ResultSrc, 
+    // Salidas
+    output reg Branch,
+    output reg [1:0] ResultSrc, 
     output reg MemWrite,
     output reg ALUSrc,
     output reg [1:0] ImmSrc,
@@ -12,9 +13,7 @@ module mainDecoder(
     output reg [1:0] ALUOp
 );
 
-// La señal 'branch' siempre está prendida, ayuda a manejar la señal de PCSrc
-wire branch = 1;
-
+// Las señales de control cambian dependiendo del op
 always @(*)
 begin
     casex(op)
@@ -32,13 +31,13 @@ begin
             ImmSrc = 01;
             ALUSrc = 1;
             MemWrite = 1;
-            ResultSrc = xx;
+            ResultSrc = 2'bxx;
             Branch = 0;
             ALUOp = 00; 
         end
         7'd51: begin // R-type
             RegWrite = 1;
-            ImmSrc = xx;
+            ImmSrc = 2'bxx;
             ALUSrc = 0;
             MemWrite = 0;
             ResultSrc = 00;
@@ -50,7 +49,7 @@ begin
             ImmSrc = 10;
             ALUSrc = 0;
             MemWrite = 0;
-            ResultSrc = xx;
+            ResultSrc = 2'bxx;
             Branch = 1;
             ALUOp = 01; 
         end
