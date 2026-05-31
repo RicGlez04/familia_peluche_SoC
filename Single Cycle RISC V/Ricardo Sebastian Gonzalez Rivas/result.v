@@ -1,14 +1,15 @@
 module result(
-    // Inputs
+    // Entradas
     input [1:0] ResultSrc,
     input [31:0] ALUResult,  // Resultado directamente del ALU
     input [31:0] ReadData,   // Resultado tras leer memoria
     input [31:0] PCPlus4,    // Resultado tras aumentar PC por cuatro
 
-    // Outputs
+    // Salidas
     output reg [31:0] Result     // Resultado seleccionado
 );
 
+// Se escoge el resultado dependiendo de la señal de control
 always @(*)
 begin
     case(ResultSrc)
