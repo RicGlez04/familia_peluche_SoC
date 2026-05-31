@@ -2,11 +2,11 @@ module PCNext(
     // Señal de control para PC 
     input PCSrc,
 
-    // Input PC
+    // PCs de entrada
     input [31:0] PCPlus4,
     input [31:0] PCTarget,
 
-    // Output PC
+    // PC de salida
     output reg [31:0] PCNext
 );
 
@@ -15,7 +15,7 @@ begin
     case(PCSrc)
         1'b0: PCNext = PCPlus4;
         1'b1: PCNext = PCTarget;
-        default: PCNext = PCNExt;
+        default: PCNext = PCNext;
     endcase
 end
 
