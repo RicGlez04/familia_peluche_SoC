@@ -6,12 +6,12 @@ module tb_RISCV();
     reg rst;
 
     // Instancia del módulo Top
-    riscv_single_cycle uut (
+    RISCV_Single_Cycle DUT (
         .clk(clk),
         .rst(rst)
     );
 
-    // Generador de Reloj (Periodo de 10ns -> 100MHz)
+    // Generar el reloj
     always begin
         #5 clk = ~clk;
     end
@@ -21,12 +21,11 @@ module tb_RISCV();
         clk = 0;
         rst = 1;
         
-        // Esperamos 12ns y soltamos el reset
-        #12;
-        rst = 0;
+        #15;      // Esperar 12 ciclos
+        rst = 0;  // Soltar señal de reset
         
-        // Dejar correr la simulación por 100ns para ejecutar las instrucciones del .hex
-        #100;
+        // Dejar correr la simulación para ejecutar TODAS las instrucciones
+        #200;
         
         $display("Simulación terminada de manera exitosa.");
         $finish;
@@ -34,7 +33,12 @@ module tb_RISCV();
 
     // Monitoreo opcional para ver cambios en la consola del simulador
     initial begin
-        $monitor("Tiempo=%0d ns | Reset=%b | PC=%h", $time, rst, uut.PC_wire);
+        $monitor("Tiempo=%0d ns | Reset=%b | PC=%h", $time, rst, DUT.PC_wire);
+    end
+
+    initial begin
+        $dumpfile("simulacion.vcd");
+        $dumpvars(0, tb_RISCV);
     end
 
 endmodule
