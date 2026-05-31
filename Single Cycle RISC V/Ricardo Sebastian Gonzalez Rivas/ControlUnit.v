@@ -1,12 +1,15 @@
-// Este modulo integra el main decoder y ALU decoder
+// Este módulo es el bloque completo, el Control Unit
+// e integra el main decoder y ALU decoder
 module ControlUnit(
-    input [6:0] op,
+    // Entradas
+    input [6:0] op,     // Recibe el op completo
     input [2:0] funct3,
     input funct7,
     input zero,
 
+    // Salidas
     output PCSrc,
-    output ResultSrc,
+    output [1:0] ResultSrc,
     output MemWrite,
     output [2:0] ALUControl,
     output ALUSrc,
@@ -16,33 +19,35 @@ module ControlUnit(
 
 // Señal intermedias
 wire [1:0] ALUOp;
+wire Branch;
 
 // El Control Unit toma el ingreso de la instrucción completa y separa las señales de control
-MainDecoder mainDecoder(
+mainDecoder MainDecoder(
     // Inputs 
     .op(op),
-    .zero(zero),
 
     // Outputs
-    .PCSrc(PCSrc),
     .ResultSrc(ResultSrc),
     .MemWrite(MemWrite),
     .ALUSrc(ALUSrc),
     .ImmSrc(ImmSrc),
     .RegWrite(RegWrite),
-    .ALUOp(ALUOp)
+    .ALUOp(ALUOp),
+    .Branch(Branch)
 );
 
-ALUDecode ALUDecoder(
+ALUDecoder ALUDecode(
     // Inputs
     .ALUOp(ALUOp),
     .funct3(funct3),
     .funct7(funct7),
-    .op5(op[5]),
+    .op5(op[5]),       // Solo recibe el bit 5 del op
     
     // Outputs
     .ALUControl(ALUControl)
 );
 
+// Se calcula PCSrc
+assign PCSrc = Branch & zero;
 
 endmodule
