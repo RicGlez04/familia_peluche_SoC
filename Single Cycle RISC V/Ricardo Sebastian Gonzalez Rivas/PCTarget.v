@@ -1,9 +1,9 @@
 module PCTarget(
-    // Inputs
-    input [31:0] PC,    // Program Counter actual
-    input [31:0] ImmExt // Inmediato extendido (32 bits)
+    // Entradas
+    input [31:0] PC,     // Program Counter actual
+    input [31:0] ImmExt,  // Inmediato extendido (32 bits)
 
-    // Outputs
+    // Salidas
     output [31:0] PCTarget 
 );
 
