@@ -1,57 +1,84 @@
 import serial
-import math
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import sys
+import numpy as np
+import math
+from matplotlib.animation import FuncAnimation
 
-puerto = "COM4" # Cambia si es necesario
-rango_max = 50
-
-try:
-    ser = serial.Serial(puerto, 9600, timeout=0.1)
-    print(f"✅ Radar conectado en {puerto}")
-except:
-    print("❌ Error de conexión"); sys.exit()
-
-plt.ion()
-fig, ax = plt.subplots(figsize=(8, 8))
-ax.set_aspect('equal')
-ax.set_xlim(-rango_max-5, rango_max+5)
-ax.set_ylim(-rango_max-5, rango_max+5)
-ax.axis('off')
-
-# Dibujo del Radar
-circ_fondo = patches.Circle((0,0), rango_max, color='#0F172A', zorder=0)
-circ_borde = patches.Circle((0,0), rango_max, edgecolor='#22D3EE', fill=False, linewidth=2, zorder=5)
-ax.add_patch(circ_fondo)
-ax.add_patch(circ_borde)
-
-# Línea de barrido y puntos
-haz, = ax.plot([], [], color='#22D3EE', linewidth=3, alpha=0.8)
-puntos, = ax.plot([], [], 'o', color='#F87171', markersize=5, alpha=0.6)
-
-x_hist, y_hist = [], []
+# --- CONFIGURACIÓN ---
+PORT = 'COM5'  # <-- ¡CAMBIA ESTO AL PUERTO COM DE TU TARJETA!
+BAUD = 9600
+MAX_DISTANCE = 50  # Distancia máxima del radar en cm (ajusta según necesites)
 
 try:
-    while True:
-        linea = ser.readline().decode('utf-8', errors='ignore').strip()
-        if ',' in linea:
-            try:
-                ang, dist = map(float, linea.split(','))
-                rad = math.radians(ang)
+    ser = serial.Serial(PORT, BAUD, timeout=1)
+except Exception as e:
+    print(f"Error al conectar con {PORT}: {e}")
+    exit()
+
+# Arrays para guardar los datos de 0 a 180 grados
+angles_rad = np.radians(np.arange(0, 181))
+distances = np.zeros(181)
+
+# Configurar el lienzo polar de matplotlib
+fig = plt.figure(facecolor='black')
+ax = fig.add_subplot(111, projection='polar')
+ax.set_facecolor('black')
+ax.tick_params(colors='green')
+ax.grid(color='green', alpha=0.5)
+
+# Configurar límites para medio círculo (0 a 180 grados)
+ax.set_thetamin(0)
+ax.set_thetamax(180)
+ax.set_rmax(MAX_DISTANCE)
+ax.set_title("Radar Ultrasónico - KL25Z", color='green', weight='bold', pad=20)
+
+# Inicializar los puntos en la gráfica (Estilo "Matrix/Radar")
+scatter = ax.scatter(angles_rad, distances, c=distances, cmap='hsv', s=50, alpha=0.75)
+line, = ax.plot([0, 0], [0, MAX_DISTANCE], color='green', linewidth=2, alpha=0.8) # Línea de barrido
+
+def update(frame):
+    try:
+        # Leer la línea del puerto serie y decodificar
+        line_data = ser.readline().decode('utf-8').strip()
+        if not line_data:
+            return scatter, line
+
+        # Extraer ángulo y distancia
+        parts = line_data.split(',')
+        if len(parts) == 2:
+            angle = int(parts[0])
+            dist = int(parts[1])
+            
+            # Limitar la distancia máxima para que el gráfico no se descomponga
+            if dist > MAX_DISTANCE:
+                dist = MAX_DISTANCE
+
+            # Actualizar el array en el índice correspondiente
+            if 0 <= angle <= 180:
+                distances[angle] = dist
                 
-                # Conversión X, Y
-                x = dist * math.cos(rad)
-                y = dist * math.sin(rad)
-                
-                x_hist.append(x); y_hist.append(y)
-                if len(x_hist) > 40: x_hist.pop(0); y_hist.pop(0)
-                
-                puntos.set_data(x_hist, y_hist)
-                haz.set_data([0, x], [0, y])
-                fig.canvas.draw_idle()
-                fig.canvas.flush_events()
-            except: continue
-        plt.pause(0.001)
+                # Actualizar posición de la línea de barrido
+                current_angle_rad = math.radians(angle)
+                line.set_data([current_angle_rad, current_angle_rad], [0, MAX_DISTANCE])
+
+            # Actualizar los puntos
+            scatter.set_offsets(np.c_[angles_rad, distances])
+            # Cambiar colores según la distancia para mejor visualización
+            scatter.set_array(distances)
+            
+    except ValueError:
+        pass # Ignorar líneas corruptas o basura en el buffer
+    except Exception as e:
+        print(f"Error leyendo datos: {e}")
+        
+    return scatter, line
+
+# Iniciar animación (se actualiza lo más rápido posible leyendo el buffer)
+ani = FuncAnimation(fig, update, frames=None, interval=10, blit=True, cache_frame_data=False)
+
+try:
+    plt.show()
 except KeyboardInterrupt:
-    ser.close(); plt.close()
+    print("Cerrando programa...")
+finally:
+    ser.close()
