@@ -1,0 +1,92 @@
+// Función: Genera las señales de control globales según el opcode de la instrucción.
+module Main_Decoder(
+	input[6:0] op,
+	output reg RegWrite, ALUSrc, MemWrite, Branch, Jump,
+	output reg [1:0] ImmSrc, ResultSrc, AluOp
+);
+
+always@(*)
+	begin
+		// Activa las señales de control de la arquitectura según el opcode de la instrucción actual.
+		case(op)
+			3:
+				begin
+					RegWrite=1;
+					ImmSrc=0;
+					ALUSrc=1;
+					MemWrite=0;
+					ResultSrc=1;
+					Branch=0;
+					AluOp=0;
+					Jump=0;
+				end
+			35:
+				begin
+					RegWrite=0;
+					ImmSrc=1;
+					ALUSrc=1;
+					MemWrite=1;
+					ResultSrc=2'bxx;
+					Branch=0;
+					AluOp=0;
+					Jump=0;
+				end
+			51:
+				begin
+					RegWrite=1;
+					ImmSrc=2'bxx;
+					ALUSrc=0;
+					MemWrite=0;
+					ResultSrc=0;
+					Branch=0;
+					AluOp=2;
+					Jump=0;
+				end
+			99:
+				begin
+					RegWrite=0;
+					ImmSrc=2;
+					ALUSrc=0;
+					MemWrite=0;
+					ResultSrc=2'bxx;
+					Branch=1;
+					AluOp=1;
+					Jump=0;
+				end
+			19:
+				begin
+					RegWrite=1;
+					ImmSrc=0;
+					ALUSrc=1;
+					MemWrite=0;
+					ResultSrc=0;
+					Branch=0;
+					AluOp=2;
+					Jump=0;
+				end
+			111:
+				begin
+					RegWrite=1;
+					ImmSrc=3;
+					ALUSrc=1'bx;
+					MemWrite=0;
+					ResultSrc=2;
+					Branch=0;
+					AluOp=2'bxx;
+					Jump=1;
+				end
+			default:
+				begin
+					RegWrite=0;
+					ImmSrc=0;
+					ALUSrc=0;
+					MemWrite=0;
+					ResultSrc=0;
+					Branch=0;
+					AluOp=0;
+					Jump=0;
+				end
+		endcase
+	end
+endmodule
+				
