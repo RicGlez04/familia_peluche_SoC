@@ -1,7 +1,7 @@
 // Función: Transforma los inmediatos de las instrucciones a 32 bits.
 module Imm_Extend(
-	input[1:0] ImmSrc,
-	input[31:0] Instr,
+	input[1:0] ImmSrc,       // Señal de control dependiendo de la instrucción
+	input[31:0] Instr,		 // Instrucción completa
 	output reg[31:0] ImmExt
 );
 
