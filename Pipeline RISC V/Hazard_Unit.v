@@ -5,10 +5,12 @@ module Hazard_Unit(
 	output reg [1:0] ForwardAE, ForwardBE
 );
 
+// Señal intermedia
 wire lwStall;
 
 always @(*)
 	begin
+		// Protocolo de forwarding para ambos Src1 y Src2
 		if (((Rs1E == RdM) && RegWriteM) && (Rs1E != 0))
 			ForwardAE = 2'b10;
 		else if (((Rs1E == RdW) && RegWriteW) && (Rs1E != 0))
@@ -22,7 +24,8 @@ always @(*)
 			ForwardBE = 2'b01;
 		else 		
 			ForwardBE = 2'b00;
-			
+
+		// Protocolo de Stall y Flush
 		StallF = lwStall;
 		StallD = lwStall;
 		FlushD = PCSrcE;
