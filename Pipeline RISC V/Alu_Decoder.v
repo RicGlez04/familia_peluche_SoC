@@ -1,9 +1,9 @@
 // Función: Decodificador de la ALU que define la operación específica a realizar según el tipo de instrucción.
 module Alu_Decoder(
-	input [1:0] AluOp,
-	input [2:0] funct3,
-	input funct7, Op,
-	output reg [2:0] Instruction
+	input [1:0] AluOp,            // Código de instrucción
+	input [2:0] funct3,			  // ...
+	input funct7, Op,			  // ...
+	output reg [2:0] Instruction  // Señal de control para la ALU
 );
 
 always @(*)
