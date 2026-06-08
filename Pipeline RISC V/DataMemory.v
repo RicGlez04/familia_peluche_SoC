@@ -5,9 +5,13 @@ module DataMemory(
 	output reg [31:0] ReadData
 );
 
+// Pequeña memoria RAM
 reg[31:0] memoria [0:63];
+
+// Iterador	
 integer i;
 
+// Escritura de memoria
 always@(posedge clk or posedge rst)
 	begin
 		if (rst) 
@@ -20,6 +24,7 @@ always@(posedge clk or posedge rst)
 			memoria[Alu_result[31:2]]<=WriteData;
 	end
 
+// Lectura de memoria es directa
 always@(*)
 	ReadData=memoria[Alu_result[31:2]];
 
