@@ -1,5 +1,7 @@
+// Función: Registro entre las etapas Decode y Execute.
+// Las señales pasan de D a E.
 module Register_ID_EX(
-	input clk, rst, FlushE, MemWriteD, AluSrcD, RegWriteD, JumpD, BranchD,
+	input clk, rst, FlushE, MemWriteD, AluSrcD, RegWriteD, JumpD, BranchD,  // Se incluye la señal de Flush
 	input [1:0] ResultSrcD,
 	input [2:0] AluControlD,
 	input [31:0] PCD, ExtImmD, PCPlus4D, RD1, RD2,
@@ -11,8 +13,10 @@ module Register_ID_EX(
 	output reg [4:0] Rs1E, Rs2E, RdE
 );
 
+// Actualización de datos con clk o rst
 always@(posedge clk or posedge rst)
 	begin
+		// Reinicio de todos los datos
 		if(rst)
 			begin
 				MemWriteE<=0;
@@ -31,6 +35,7 @@ always@(posedge clk or posedge rst)
 				RD1E<=0;
 				RD2E<=0;
 			end
+		// Funcionalidad con Flush
 		else if(FlushE)
 			begin
 				MemWriteE<=0;
@@ -49,6 +54,7 @@ always@(posedge clk or posedge rst)
 				RD1E<=0;
 				RD2E<=0;
 			end
+		// Paso de datos con clk
 		else
 			begin
 				MemWriteE<=MemWriteD;
