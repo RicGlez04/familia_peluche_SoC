@@ -8,8 +8,11 @@ module ControlUnit(
 	output [1:0] ImmSrcD, ResultSrcD
 );
 
+// Wire intermedios
 wire [1:0] AluOp;
 
+// Se integran los módulos del Main Decoder y ALU Decoder
+	
 Main_Decoder MainDecoder(
 	.op(op),
 	.RegWrite(RegWriteD), 
