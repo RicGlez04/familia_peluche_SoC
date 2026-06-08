@@ -1,3 +1,5 @@
+// Función: Registro entre etapas Memory y Writeback.
+// Las señales pasan de M a W.
 module Register_MEM_WB(
 	input clk, rst, RegWriteM,
 	input [1:0] ResultSrcM,
@@ -11,8 +13,10 @@ module Register_MEM_WB(
 	output reg [4:0] RdW
 );
 
+// Control de datos con clk o rst
 always@(posedge clk or posedge rst)
 	begin
+		// Reinicio de datos con rst
 		if(rst)
 			begin
 				RegWriteW<=0;
@@ -22,6 +26,7 @@ always@(posedge clk or posedge rst)
 				PCPlus4W<=0;
 				RdW<=0;
 			end
+		// Paso de datos con clk
 		else
 			begin
 				RegWriteW<=RegWriteM;
