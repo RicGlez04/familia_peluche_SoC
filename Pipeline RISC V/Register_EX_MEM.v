@@ -1,3 +1,5 @@
+// Función: Registro entre las etapas Execute y Memory.
+// Las señales pasan de E a M.
 module Register_EX_MEM(
 	input clk, rst, MemWriteE, RegWriteE,
 	input [1:0] ResultSrcE,
@@ -9,8 +11,10 @@ module Register_EX_MEM(
 	output reg [4:0] RdM
 );
 
+// Se actualiza con clk o rst
 always@(posedge clk or posedge rst)
 	begin
+		// Reset
 		if(rst)
 			begin
 				MemWriteM<=0;
@@ -21,6 +25,7 @@ always@(posedge clk or posedge rst)
 				PCPlus4M<=0;
 				RdM<=0;
 			end
+		// Actualización con clk
 		else
 			begin
 				MemWriteM<=MemWriteE;
