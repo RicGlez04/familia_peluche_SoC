@@ -6,9 +6,13 @@ module Register_File(
 		output reg [31:0] RD1, RD2
 );
 
+// 32 registros de 32 bits
 reg[31:0] registers[0:31];
+
+// Variable como iterador	
 integer i;
 
+// Escritura con ~clk o rst
 always@(negedge clk or posedge rst)
 	begin
 		if (rst) 
@@ -20,6 +24,7 @@ always@(negedge clk or posedge rst)
 			registers[A3]<=WD3;
 	end
 
+// Control de RD1 asincrona
 always@(*)
 	begin
 		if(A1==0)
@@ -28,6 +33,7 @@ always@(*)
 			RD1=registers[A1];
 	end
 
+// Control de RD2 asincrona
 always@(*)
 	begin
 		if(A2==0)
